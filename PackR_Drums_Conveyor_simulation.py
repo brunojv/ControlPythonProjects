@@ -8,10 +8,11 @@ from pylogix import PLC
 # Initialize the conveyor belt (deque)
 conveyor_belt = deque()
 
-# Boolean flags for monitoring
+# Boolean flags for monitoring & functions operating values 
 drum_added_flag = False
 drum_removed_flag = False
 drumNumber = 0
+drums_filled = 0
 
 # Function to write to PLC
 def write_PLC(drumStatus):
@@ -41,11 +42,12 @@ def remove_drum():
     return drum_id
 
 # Main loop to process drums on the conveyor
-def conveyor_system():
-    global drum_added_flag, drum_removed_flag,drumNumber
+def conveyor_system(drums_qty):
+    global drum_added_flag, drum_removed_flag,drumNumber,drums_filled
     drum_id = 1
+    
     try:
-        while True:
+        while drums_filled < drums_qty:
             # Reset flags at the start of each loop
             drum_added_flag = False
             drum_removed_flag = False
@@ -68,11 +70,23 @@ def conveyor_system():
             #write_PLC(drum_added_flag)
             if drum_added_flag ==1:
                drumNumber = drumNumber + 1
-               write_PLC(drumNumber) 
+               write_PLC(drumNumber)
+
+            drums_filled += 1
 
     except KeyboardInterrupt:
         print("\nConveyor system stopped.")
 
 # Run the conveyor system
-conveyor_system()
+def main():
+  
+  jobs_drum_qty = 0  
+  jobs_drum_qty = int(input("Enter job's drums to fil qty: "))
+  conveyor_system(jobs_drum_qty)
+  print("\n")
+  print(f"Drums filled: {drums_filled}") 
+  print("\n")
 
+if __name__ == main():
+  main()
+  
